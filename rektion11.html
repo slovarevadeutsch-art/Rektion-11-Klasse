@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление глаголов в немецком (97 вопросов)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 650px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .progress {
+            text-align: right;
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+
+        .question {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2980b9;
+            text-align: center;
+            padding: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 2px solid #bdc3c7;
+            background-color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        button:hover:not(:disabled) {
+            border-color: #3498db;
+            background-color: #ecf0f1;
+        }
+
+        button.correct {
+            background-color: #2ecc71;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        button.wrong {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+
+        button:disabled {
+            cursor: default;
+        }
+
+        #next-btn {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            font-weight: bold;
+            display: none;
+            text-align: center;
+        }
+
+        #next-btn:hover {
+            background-color: #2980b9;
+        }
+
+        #result {
+            text-align: center;
+            display: none;
+        }
+
+        #result h2 {
+            color: #2c3e50;
+        }
+
+        #result p {
+            font-size: 20px;
+        }
+
+        #restart-btn {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            font-weight: bold;
+            text-align: center;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #restart-btn:hover {
+            background-color: #8e44ad;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="quiz-section">
+        <h1>Управление глаголов в немецком языке</h1>
+        <div class="progress" id="progress">Вопрос 1 из 97</div>
+        <div class="question" id="question-text">Загрузка...</div>
+        <div class="options" id="options-container"></div>
+        <button id="next-btn">Следующий вопрос</button>
+    </div>
+
+    <div id="result">
+        <h2>Тест завершен!</h2>
+        <p>Ваш результат: <span id="score"></span> из 97</p>
+        <button id="restart-btn">Пройти еще раз</button>
+    </div>
+</div>
+
+<script>
+    // Все 97 вопросов
+    const allQuestions = [
+        { verb: "abhängen", correct: "von Dat.", options: ["von Dat.", "auf Akk.", "an Akk.", "mit Dat."] },
+        { verb: "achten", correct: "auf Akk.", options: ["auf Akk.", "an Dat.", "über Akk.", "für Akk."] },
+        { verb: "anfangen", correct: "mit Dat.", options: ["mit Dat.", "von Dat.", "an Akk.", "auf Akk."] },
+        { verb: "ankommen", correct: "auf Akk.", options: ["auf Akk.", "an Dat.", "für Akk.", "über Akk."] },
+        { verb: "antworten", correct: "auf Akk.", options: ["auf Akk.", "an Akk.", "über Akk.", "für Akk."] },
+        { verb: "sich ärgern", correct: "über Akk.", options: ["über Akk.", "auf Akk.", "an Dat.", "von Dat."] },
+        { verb: "aufhören", correct: "mit Dat.", options: ["mit Dat.", "auf Akk.", "an Dat.", "von Dat."] },
+        { verb: "sich aufregen", correct: "über Akk.", options: ["über Akk.", "auf Akk.", "an Dat.", "von Dat."] },
+        { verb: "sich bedanken", correct: "bei Dat. für Akk.", options: ["bei Dat. für Akk.", "an Dat. über Akk.", "auf Akk. für Akk.", "von Dat. für Akk."] },
+        { verb: "sich befassen", correct: "mit Dat.", options: ["mit Dat.", "an Dat.", "über Akk.", "für Akk."] },
+        { verb: "befreien (sich)", correct: "von Dat. / aus Dat.", options: ["von Dat. / aus Dat.", "an Dat. / in Dat.", "auf Akk. / für Akk.", "über Akk. / von Dat."] },
+        { verb: "sich beklagen", correct: "bei Dat. über Akk.", options: ["bei Dat. über Akk.", "an Dat. für Akk.", "auf Akk. über Akk.", "von Dat. an Akk."] },
+        { verb: "sich beschweren", correct: "bei Dat. über Akk.", options: ["bei Dat. über Akk.", "an Dat. für Akk.", "auf Akk. über Akk.", "von Dat. an Akk."] },
+        { verb: "sich bemühen", correct: "um Akk.", options: ["um Akk.", "für Akk.", "auf Akk.", "an Akk."] },
+        { verb: "berichten", correct: "über Akk.", options: ["über Akk.", "an Akk.", "für Akk.", "von Dat."] },
+        { verb: "sich beschäftigen", correct: "mit Dat.", options: ["mit Dat.", "an Dat.", "über Akk.", "auf Akk."] },
+        { verb: "bestehen", correct: "aus Dat.", options: ["aus Dat.", "von Dat.", "in Dat.", "mit Dat."] },
+        { verb: "sich bewerben", correct: "um Akk.", options: ["um Akk.", "für Akk.", "auf Akk.", "an Akk."] },
+        { verb: "bitten", correct: "um Akk.", options: ["um Akk.", "für Akk.", "auf Akk.", "an Akk."] },
+        { verb: "danken", correct: "Dat. für Akk.", options: ["Dat. für Akk.", "Akk. um Akk.", "Dat. über Akk.", "Akk. für Akk."] },
+        { verb: "denken", correct: "an Akk.", options: ["an Akk.", "über Akk.", "auf Akk.", "von Dat."] },
+        { verb: "diskutieren", correct: "mit Dat. über Akk.", options: ["mit Dat. über Akk.", "mit Akk. über Dat.", "an Dat. für Akk.", "auf Akk. an Dat."] },
+        { verb: "eintreten", correct: "für Akk.", options: ["für Akk.", "für Dat.", "an Akk.", "auf Akk."] },
+        { verb: "sich entscheiden", correct: "für Akk.", options: ["für Akk.", "auf Akk.", "an Akk.", "über Akk."] },
+        { verb: "sich entschließen", correct: "zu Dat.", options: ["zu Dat.", "zu Akk.", "für Dat.", "an Dat."] },
+        { verb: "sich entschuldigen", correct: "bei Dat. für Akk.", options: ["bei Dat. für Akk.", "an Dat. über Akk.", "auf Akk. für Akk.", "von Dat. an Akk."] },
+        { verb: "sich erinnern", correct: "an Akk.", options: ["an Akk.", "über Akk.", "auf Akk.", "von Dat."] },
+        { verb: "erkennen", correct: "an Dat.", options: ["an Dat.", "an Akk.", "auf Akk.", "für Akk."] },
+        { verb: "sich erkundigen", correct: "bei Dat. nach Dat.", options: ["bei Dat. nach Dat.", "an Dat. über Akk.", "auf Akk. für Akk.", "von Dat. an Dat."] },
+        { verb: "fliehen", correct: "vor Dat.", options: ["vor Dat.", "vor Akk.", "für Akk.", "an Dat."] },
+        { verb: "fragen", correct: "nach Dat.", options: ["nach Dat.", "nach Akk.", "über Akk.", "für Akk."] },
+        { verb: "sich freuen", correct: "über Akk. / auf Akk.", options: ["über Akk. / auf Akk.", "an Akk. / für Akk.", "mit Dat. / von Dat.", "auf Dat. / an Akk."] },
+        { verb: "sich fürchten", correct: "vor Dat.", options: ["vor Dat.", "vor Akk.", "für Akk.", "an Dat."] },
+        { verb: "gehen um", correct: "um Akk.", options: ["um Akk.", "für Akk.", "auf Akk.", "an Akk."] },
+        { verb: "gehören", correct: "zu Dat.", options: ["zu Dat.", "in Akk.", "an Dat.", "auf Akk."] },
+        { verb: "geraten", correct: "in Akk.", options: ["in Akk.", "in Dat.", "an Akk.", "auf Akk."] },
+        { verb: "sich gewöhnen", correct: "an Akk.", options: ["an Akk.", "an Dat.", "auf Akk.", "für Akk."] },
+        { verb: "glauben", correct: "an Akk.", options: ["an Akk.", "an Dat.", "auf Akk.", "über Akk."] },
+        { verb: "gratulieren", correct: "Dat. zu Dat.", options: ["Dat. zu Dat.", "Akk. für Akk.", "Dat. für Akk.", "Akk. zu Dat."] },
+        { verb: "halten", correct: "für Akk.", options: ["für Akk.", "für Dat.", "an Akk.", "auf Akk."] },
+        { verb: "halten", correct: "von Dat.", options: ["von Dat.", "von Akk.", "an Dat.", "auf Akk."] },
+        { verb: "handeln", correct: "mit Dat.", options: ["mit Dat.", "mit Akk.", "an Dat.", "für Akk."] },
+        { verb: "sich handeln um", correct: "um Akk.", options: ["um Akk.", "für Akk.", "auf Akk.", "an Akk."] },
+        { verb: "herrschen", correct: "über Akk.", options: ["über Akk.", "über Dat.", "an Akk.", "für Akk."] },
+        { verb: "hoffen", correct: "auf Akk.", options: ["auf Akk.", "auf Dat.", "an Akk.", "für Akk."] },
+        { verb: "sich informieren", correct: "über Akk.", options: ["über Akk.", "über Dat.", "an Akk.", "für Akk."] },
+        { verb: "sich interessieren", correct: "für Akk.", options: ["für Akk.", "für Dat.", "an Akk.", "auf Akk."] },
+        { verb: "sich irren", correct: "in Dat.", options: ["in Dat.", "in Akk.", "an Dat.", "auf Akk."] },
+        { verb: "kämpfen", correct: "mit Dat. gegen Akk. / für Akk. / um Akk.", options: ["mit Dat. gegen Akk. / für Akk. / um Akk.", "an Dat. auf Akk. für Akk. / um Akk.", "mit Akk. gegen Dat. für Dat. / um Dat.", "von Dat. gegen Akk. an Akk. / auf Akk."] },
+        { verb: "klagen", correct: "über Akk.", options: ["über Akk.", "über Dat.", "an Akk.", "für Akk."] },
+        { verb: "sich konzentrieren", correct: "auf Akk.", options: ["auf Akk.", "auf Dat.", "an Akk.", "für Akk."] },
+        { verb: "sich kümmern", correct: "um Akk.", options: ["um Akk.", "um Dat.", "für Akk.", "an Akk."] },
+        { verb: "lächeln", correct: "über Akk.", options: ["über Akk.", "über Dat.", "an Akk.", "für Akk."] },
+        { verb: "leiden", correct: "an Dat. / unter Dat.", options: ["an Dat. / unter Dat.", "an Akk. / unter Akk.", "auf Akk. / von Dat.", "für Akk. / an Akk."] },
+        { verb: "liegen", correct: "an Dat.", options: ["an Dat.", "an Akk.", "auf Akk.", "von Dat."] },
+        { verb: "nachdenken", correct: "über Akk.", options: ["über Akk.", "über Dat.", "an Akk.", "für Akk."] },
+        { verb: "protestieren", correct: "gegen Akk.", options: ["gegen Akk.", "gegen Dat.", "an Akk.", "für Akk."] },
+        { verb: "sich rächen", correct: "an Dat. für Akk.", options: ["an Dat. für Akk.", "an Akk. für Dat.", "auf Akk. über Akk.", "von Dat. an Akk."] },
+        { verb: "rechnen", correct: "auf Akk. / mit Dat.", options: ["auf Akk. / mit Dat.", "auf Dat. / mit Akk.", "an Akk. / für Dat.", "von Akk. / an Dat."] },
+        { verb: "schreiben", correct: "an Akk. über Akk.", options: ["an Akk. über Akk.", "an Dat. über Dat.", "auf Akk. für Akk.", "von Dat. an Akk."] },
+        { verb: "schützen", correct: "vor Dat.", options: ["vor Dat.", "vor Akk.", "für Akk.", "an Dat."] },
+        { verb: "sich sehnen", correct: "nach Dat.", options: ["nach Dat.", "nach Akk.", "über Akk.", "für Akk."] },
+        { verb: "sorgen", correct: "für Akk.", options: ["für Akk.", "für Dat.", "um Akk.", "an Akk."] },
+        { verb: "sich sorgen", correct: "um Akk.", options: ["um Akk.", "um Dat.", "für Akk.", "an Akk."] },
+        { verb: "sich spezialisieren", correct: "auf Akk.", options: ["auf Akk.", "auf Dat.", "an Akk.", "für Akk."] },
+        { verb: "sprechen", correct: "mit Dat. über Akk. / von Dat.", options: ["mit Dat. über Akk. / von Dat.", "mit Akk. über Dat. / von Akk.", "an Dat. für Akk. / an Akk.", "auf Akk. an Dat. / für Akk."] },
+        { verb: "staunen", correct: "über Akk.", options: ["über Akk.", "über Dat.", "an Akk.", "für Akk."] },
+        { verb: "sterben", correct: "an Dat. / für Akk.", options: ["an Dat. / für Akk.", "an Akk. / für Dat.", "von Dat. / auf Akk.", "auf Akk. / an Akk."] },
+        { verb: "stoßen", correct: "auf Akk.", options: ["auf Akk.", "auf Dat.", "an Akk.", "für Akk."] },
+        { verb: "sich streiten", correct: "mit Dat. um Akk.", options: ["mit Dat. um Akk.", "mit Akk. um Dat.", "an Dat. für Akk.", "auf Akk. an Dat."] },
+        { verb: "teilnehmen", correct: "an Dat.", options: ["an Dat.", "an Akk.", "auf Akk.", "für Akk."] },
+        { verb: "trauern", correct: "um Akk.", options: ["um Akk.", "um Dat.", "für Akk.", "an Akk."] },
+        { verb: "sich trennen", correct: "von Dat.", options: ["von Dat.", "von Akk.", "an Dat.", "auf Akk."] },
+        { verb: "überreden", correct: "zu Dat.", options: ["zu Dat.", "zu Akk.", "für Dat.", "an Dat."] },
+        { verb: "sich unterhalten", correct: "mit Dat. über Akk.", options: ["mit Dat. über Akk.", "mit Akk. über Dat.", "an Dat. für Akk.", "auf Akk. an Dat."] },
+        { verb: "sich unterscheiden", correct: "von Dat.", options: ["von Dat.", "von Akk.", "an Dat.", "auf Akk."] },
+        { verb: "sich verabschieden", correct: "von Dat.", options: ["von Dat.", "von Akk.", "an Dat.", "auf Akk."] },
+        { verb: "verfügen", correct: "über Akk.", options: ["über Akk.", "über Dat.", "an Akk.", "für Akk."] },
+        { verb: "vergleichen", correct: "mit Dat.", options: ["mit Dat.", "mit Akk.", "an Dat.", "für Akk."] },
+        { verb: "sich verlassen", correct: "auf Akk.", options: ["auf Akk.", "auf Dat.", "an Akk.", "für Akk."] },
+        { verb: "sich verlieben", correct: "in Akk.", options: ["in Akk.", "in Dat.", "an Akk.", "auf Akk."] },
+        { verb: "verstoßen", correct: "gegen Akk.", options: ["gegen Akk.", "gegen Dat.", "an Akk.", "für Akk."] },
+        { verb: "sich vertiefen", correct: "in Akk.", options: ["in Akk.", "in Dat.", "an Akk.", "auf Akk."] },
+        { verb: "verwechseln", correct: "mit Dat.", options: ["mit Dat.", "mit Akk.", "an Dat.", "für Akk."] },
+        { verb: "verzichten", correct: "auf Akk.", options: ["auf Akk.", "auf Dat.", "an Akk.", "für Akk."] },
+        { verb: "sich vorbereiten", correct: "auf Akk.", options: ["auf Akk.", "auf Dat.", "an Akk.", "für Akk."] },
+        { verb: "warnen", correct: "vor Dat.", options: ["vor Dat.", "vor Akk.", "für Akk.", "an Dat."] },
+        { verb: "warten", correct: "auf Akk.", options: ["auf Akk.", "auf Dat.", "an Akk.", "für Akk."] },
+        { verb: "sich wenden", correct: "an Akk.", options: ["an Akk.", "an Dat.", "auf Akk.", "für Akk."] },
+        { verb: "sich wundern", correct: "über Akk.", options: ["über Akk.", "über Dat.", "an Akk.", "für Akk."] },
+        { verb: "zusammenstoßen", correct: "mit Dat.", options: ["mit Dat.", "mit Akk.", "an Dat.", "für Akk."] },
+        { verb: "zweifeln", correct: "an Dat.", options: ["an Dat.", "an Akk.", "auf Akk.", "für Akk."] }
+    ];
+
+    // Переменные состояния
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    const totalQuestions = allQuestions.length;
+
+    // Элементы DOM
+    const quizSection = document.getElementById('quiz-section');
+    const resultSection = document.getElementById('result');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const nextBtn = document.getElementById('next-btn');
+    const progressText = document.getElementById('progress');
+    const scoreText = document.getElementById('score');
+    const restartBtn = document.getElementById('restart-btn');
+
+    // Перемешивание массива (Фишер-Йетс)
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Начало теста
+    function startQuiz() {
+        currentQuestions = shuffleArray([...allQuestions]);
+        currentQuestionIndex = 0;
+        score = 0;
+        
+        quizSection.style.display = 'block';
+        resultSection.style.display = 'none';
+        nextBtn.style.display = 'none';
+        
+        loadQuestion();
+    }
+
+    // Загрузка текущего вопроса
+    function loadQuestion() {
+        const currentQuestion = currentQuestions[currentQuestionIndex];
+        
+        progressText.textContent = `Вопрос ${currentQuestionIndex + 1} из ${totalQuestions}`;
+        questionText.textContent = `${currentQuestion.verb} ...`;
+        
+        optionsContainer.innerHTML = '';
+        nextBtn.style.display = 'none';
+
+        const shuffledOptions = shuffleArray([...currentQuestion.options]);
+
+        shuffledOptions.forEach(option => {
+            const button = document.createElement('button');
+            button.textContent = option;
+            button.onclick = () => selectAnswer(button, option, currentQuestion.correct);
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    // Обработка ответа
+    function selectAnswer(selectedButton, selectedOption, correctOption) {
+        const allButtons = optionsContainer.querySelectorAll('button');
+        allButtons.forEach(btn => btn.disabled = true);
+
+        if (selectedOption === correctOption) {
+            selectedButton.classList.add('correct');
+            score++;
+        } else {
+            selectedButton.classList.add('wrong');
+            allButtons.forEach(btn => {
+                if (btn.textContent === correctOption) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+
+        if (currentQuestionIndex < totalQuestions - 1) {
+            nextBtn.style.display = 'block';
+        } else {
+            setTimeout(showResult, 1200);
+        }
+    }
+
+    // Показ результата
+    function showResult() {
+        quizSection.style.display = 'none';
+        resultSection.style.display = 'block';
+        scoreText.textContent = score;
+    }
+
+    // Кнопки
+    nextBtn.onclick = () => {
+        currentQuestionIndex++;
+        loadQuestion();
+    };
+
+    restartBtn.onclick = startQuiz;
+
+    // Запуск
+    startQuiz();
+</script>
+
+</body>
+</html>
